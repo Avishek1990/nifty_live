@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIFTY Live Bands</title>
+<meta name="description" content="Live next-hour and next-15-minute high/low bands and direction for the NIFTY-I future.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">NIFTY-I near-month future · 15-minute live feed · models trained to Jun 2026</p>
+  <h1>Where the next hour and the next 15 minutes can reach</h1>
+  <p class="lede">Every quarter hour the models read the last completed sixty minutes and forecast how high and how low price can go — over the next 15 minutes at every quarter hour, and over the next hour at each hour mark — together with the odds the next stretch closes up. Each band runs from the 10th to the 90th percentile with an adaptive correction that keeps it honest in calm and volatile hours alike.</p>
+  <p id="livepill"></p>
+  <dl class="setup">
+    <div><dt>Session</dt><dd><b id="s-day">—</b><span id="s-status"></span></dd></div>
+    <div><dt>Data through</dt><dd><b id="s-asof">—</b>publisher's as-of stamp</dd></div>
+    <div><dt>Hourly bands</dt><dd><b id="s-h60">—</b>contained the outcome</dd></div>
+    <div><dt>15-minute bands</dt><dd><b id="s-h15">—</b>contained the outcome</dd></div>
+  </dl>
+</header>
+
+<div class="controls" role="group" aria-label="Chart display">
+  <div class="grp"><span class="lab" id="l-style">Price as</span>
+    <div class="seg" role="group" aria-labelledby="l-style">
+      <button type="button" id="opt-line" aria-pressed="true">Line</button>
+      <button type="button" id="opt-candle" aria-pressed="false">Candles</button>
+    </div></div>
+  <label class="check" for="opt-vol"><input type="checkbox" id="opt-vol">Show volume</label>
+  <span class="spacer"></span>
+  <span class="stamp" id="refreshed"></span>
+</div>
+
+<section id="today">
+  <div class="sechead"><p class="eyebrow">Today</p><h2 id="h-today">—</h2><p id="p-today"></p></div>
+
+  <div class="desk" id="desk">
+    <div class="levels">
+      <div class="lvcard" id="lv-60"></div>
+      <div class="lvcard" id="lv-15"></div>
+    </div>
+    <div class="flow" id="flowbox"></div>
+  </div>
+
+  <div class="figure">
+    <div class="fighead"><h3>Next hour · forecast at each hour mark</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi);opacity:.5"></span>high band</li><li><span class="sw" style="background:var(--lo);opacity:.5"></span>low band</li><li><span class="sw" style="background:var(--up)"></span>buy candle</li><li><span class="sw" style="background:var(--down)"></span>sell candle</li><li><span class="sw" style="background:var(--ok)"></span>outcome in band</li></ul></div>
+    <div class="chart" id="c-60"></div>
+    <p class="caption">Each box spans the sixty minutes its forecast covers, from the 10th to the 90th percentile of that hour's high (blue) and low (orange); the line inside is the median. Candles are green when the five-minute bar closed up (buy) and red when it closed down (sell). Dots mark what happened.</p>
+    <details><summary>Every hourly forecast</summary><div class="scroll"><table id="t-60"></table></div></details>
+  </div>
+
+  <div class="figure">
+    <div class="fighead"><h3>Next hour · direction</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--up)"></span>leans up</li><li><span class="sw" style="background:var(--down)"></span>leans down</li><li>▲▼ realised move</li></ul></div>
+    <div class="chart" id="d-60"></div>
+    <p class="caption">Each bar is the model's probability the hour closes above its opening mark: above the centre line and green means up, below and red means down; the taller the bar the more one-sided the call. The triangle under the axis is what actually happened — green when the call was right.</p>
+  </div>
+
+  <div class="figure">
+    <div class="fighead"><h3>Next 15 minutes · forecast every quarter hour</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi);opacity:.5"></span>high band</li><li><span class="sw" style="background:var(--lo);opacity:.5"></span>low band</li><li><span class="sw" style="background:var(--up)"></span>buy candle</li><li><span class="sw" style="background:var(--down)"></span>sell candle</li><li><span class="sw" style="background:var(--ok)"></span>outcome in band</li></ul></div>
+    <div class="chart" id="c-15"></div>
+    <p class="caption">One box per quarter hour, covering the fifteen minutes after its mark. The 15-minute model has its own features and its own adaptive correction; the bands are tighter because less can happen in a quarter hour.</p>
+    <details><summary>Every 15-minute forecast</summary><div class="scroll"><table id="t-15"></table></div></details>
+  </div>
+
+  <div class="figure">
+    <div class="fighead"><h3>Next 15 minutes · direction</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--up)"></span>leans up</li><li><span class="sw" style="background:var(--down)"></span>leans down</li><li>▲▼ realised move</li></ul></div>
+    <div class="chart" id="d-15"></div>
+    <p class="caption">The probability the next fifteen minutes close up, at every quarter-hour mark, scored the same way.</p>
+  </div>
+</section>
+
+<section id="ref">
+  <div class="sechead"><p class="eyebrow">Previous session, fully scored</p><h2 id="h-ref">—</h2>
+  <p>The same models over the last completed session, where every forecast has an outcome.</p></div>
+  <div class="figure">
+    <div class="fighead"><h3>Next hour</h3><p id="r-60"></p></div>
+    <div class="chart" id="c-r60"></div>
+    <div class="chart" id="d-r60"></div>
+  </div>
+  <div class="figure">
+    <div class="fighead"><h3>Next 15 minutes</h3><p id="r-15"></p></div>
+    <div class="chart" id="c-r15"></div>
+    <div class="chart" id="d-r15"></div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="sechead"><p class="eyebrow">How to read it</p><h2>What the bands are</h2></div>
+  <ul class="obs">
+    <li><b>The publisher writes one file per quarter hour</b>, about a minute after it closes. This page re-reads the data every 15 minutes; nothing needs reloading by hand.</li>
+    <li><b>The first forecast of a day is at 10:15.</b> Each model reads a completed sixty-minute window and no window crosses the overnight gap, so the session's first twelve 5-minute bars have to print first.</li>
+    <li><b>Hourly bands stop at 14:30 and 15-minute bands at 15:15</b>, the last marks whose horizon still ends by the 15:30 close.</li>
+    <li><b>The band is the forecast; the median line is not.</b> Over Feb–Jun 2026 out of sample, the 80% bands covered 80.0% (hourly) and 79.9% (15-minute), within 1.3 and 0.5 points in every volatility regime.</li>
+    <li><b>Direction is a separate model</b> and a genuinely harder call than the range; read the bars as a lean, not a certainty.</li>
+  </ul>
+  <div class="note"><p>Forecasts, not advice. Nothing about costs, slippage or execution is modelled.</p></div>
+</section>
+
+<footer>Pipeline <span class="mono">og/</span> · adaptive conformal quantile bands · page generated <span id="f-gen">—</span></footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIFTY50 Bliss</title>
+<meta name="description" content="Live NIFTY50: market news, the day's high and low forecast at 09:15, its 10:15, next-hour and news-calibrated updates, and how the forecast did over the last 30 sessions.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Exo+2:wght@400;600&family=Share+Tech+Mono&display=swap">
+<link rel="stylesheet" href="style.css?v=67f16f57e0">
+</head>
+<body>
+<div class="flash" id="flash" aria-live="polite"></div>
+<div class="wrap">
+<header>
+  <p class="eyebrow">NIFTY50 cash index · Dhan 5-minute bars · NIFTY50 Bliss</p>
+  <div class="spot" id="spot"></div>
+  <div class="ohlc" id="ohlc"></div>
+  <p id="livepill"></p>
+</header>
+
+<section id="forecast">
+  <div class="sechead"><p class="eyebrow">Day forecast · issued 09:15, fixed for the day</p><h2 id="h-today">—</h2>
+    <p>Where today's high and low should land, from the OPEN model, once the open is known. A level marked 90% means the high stays below it (or the low stays above it) on 90 days in 100.</p></div>
+  <div id="c-open"></div>
+  <div class="cards" id="cards3"></div>
+  <div class="cards" id="cards-day"></div>
+</section>
+
+<section id="charts">
+  <div class="sechead"><p class="eyebrow">Charts</p><h2>Today's price against the forecast</h2></div>
+  <div class="figure">
+    <div class="fighead"><h3>The day so far</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi);opacity:.5"></span>where the high should land</li><li><span class="sw" style="background:var(--lo);opacity:.5"></span>where the low should land</li><li><span class="sw" style="background:var(--muted)"></span>yesterday's close</li></ul></div>
+    <div class="chart" id="c-day"></div>
+    <p class="caption">How to read it: the cyan zone is where the day's high is expected (8 days in 10 it ends inside), the magenta zone the same for the low. The solid line in each zone is the middle guess. The thin dashed lines are the far limits: the day goes past its 95% line about 1 day in 20, past the 99% line about 1 day in 100. If price is pushing the edge of a zone early, the day is running bigger than the model expected.</p>
+  </div>
+  <div class="figure">
+    <div class="fighead"><h3>The next hour, every 15 minutes</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi);opacity:.5"></span>next hour's high</li><li><span class="sw" style="background:var(--lo);opacity:.5"></span>next hour's low</li><li><span class="sw" style="background:var(--ok)"></span>landed inside</li></ul></div>
+    <div class="chart" id="c-hour"></div>
+    <p class="caption">From 10:15, every quarter hour, the DVine model forecasts how high and how low the coming hour goes. Each small box is one forecast, drawn where it was made: cyan for the hour's high, magenta for its low. Once the hour is over a dot shows what happened: green when it landed inside the box.</p>
+    <details><summary>Every hourly forecast</summary><div class="scroll"><table id="t-hour"></table></div></details>
+  </div>
+</section>
+
+<section id="news">
+  <div class="sechead"><p class="eyebrow">News calibration</p><h2>The forecasts adjusted for the news</h2></div>
+  <div class="figure">
+    <div id="nw-body"></div>
+    <p class="caption">A thin layer on top of the models; the models themselves are unchanged. <b>Base</b> is the model's own forecast. <b>News (v1)</b> moves each level by an amount learned from earlier sessions, using the daily news signal (mood, loudness, news impact on the gap and on the size of the day) of today and the two sessions before, all published by 05:30. <b>v2</b> adds the real-time news from GDELT's 15-minute article files, up to 15 minutes before the mark: the share of Indian articles about market drivers (RBI, inflation, the rupee, crude, the Fed, tariffs and so on) and their tone, since the open and over the last hour. At each mark the day's OPEN levels are re-issued, never inside the high or low already made.</p>
+    <details><summary>Every mark so far</summary><div class="scroll"><table id="t-news"></table></div></details>
+    <details><summary>How the version 1 calibration scored out of sample</summary><div class="scroll"><table id="t-news-sc"></table></div>
+      <p class="tbl-note">Walk-forward, refitted every quarter from 2021. Error: average pinball loss in % (levels) or log loss (probabilities); lower is better. Recalibrated = the same correction without the news inputs. “News − recal.” is the difference with its 95% bootstrap range over sessions; below 0 means the news version had the lower loss.</p></details>
+  </div>
+</section>
+
+<section id="history">
+  <div class="sechead"><p class="eyebrow">Last 30 sessions</p><h2>Forecast against what happened</h2>
+    <div class="seg" role="group" aria-label="Forecast shown"><button type="button" id="h-open" aria-pressed="true">09:15 · OPEN</button><button type="button" id="h-e1015" aria-pressed="false">10:15 re-issue · Elephant</button></div>
+    <p><span id="h-what">The 09:15 day forecast (OPEN)</span> for each of the last 30 sessions, with the actual high and low. A band holds when the actual landed inside it: a well-calibrated 50% band holds about half the time, an 80% band 8 times in 10, a 90% band 9 times in 10.</p></div>
+  <div class="acc" id="acc"></div>
+  <div class="figure">
+    <div class="fighead"><h3>Predicted bands and the actual high and low</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi);opacity:.5"></span>high: 50% / 80% / 90% band</li><li><span class="sw" style="background:var(--lo);opacity:.5"></span>low: 50% / 80% / 90% band</li><li><span class="sw" style="background:var(--ok)"></span>actual inside 80%</li><li><span class="sw sw-ring"></span>actual outside 80%</li></ul></div>
+    <div class="chart" id="c-hist"></div>
+    <p class="caption">Each column is one session. The darkest part of a bar is the 50% band, the middle shade the 80% band, the thin line the 90% band. 50% = 25th to 75th percentile, 80% = 10th to 90th, 90% = 5th to 95th. <span id="h-note"></span></p>
+    <details open><summary>Session by session</summary><div class="scroll"><table id="t-hist"></table></div></details>
+  </div>
+</section>
+
+<footer>
+  <p>Models: OPEN (XGBoost quantile bands from the open), Elephant v2 (ten-member stack, 10:15 re-issue), DVine (D-vine copula, next hour), news calibration (GDELT). Built from Dhan market data by the NIFTY50 Bliss pipeline. Forecasts, not advice.</p>
+  <p class="stamp" id="gen"></p>
+</footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script src="app.js?v=67f16f57e0"></script>
+</body>
+</html>

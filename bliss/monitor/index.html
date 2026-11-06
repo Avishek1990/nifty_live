@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIFTY50 Model Monitor</title>
+<meta name="description" content="Every NIFTY50 Bliss model's forecast of the day's and the hour's high, low and range against what happened, since the models were frozen; updated after each session's close.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../style.css?v=06ed2de261">
+<link rel="stylesheet" href="monitor.css?v=a5b904788a">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow"><a href="../">NIFTY50 Bliss</a> · model monitor</p>
+  <h1>Every model against what happened</h1>
+  <p class="lede" id="lede">Each model was trained once, on every session up to its training cut-off, and then frozen: every session since is a forecast it has never seen. After each session's close the page adds that session's forecasts and what the market did.</p>
+  <dl class="setup" id="facts"></dl>
+</header>
+
+<div class="controls">
+  <span class="grp"><span class="lab">Target</span>
+    <span class="seg" role="group" aria-label="Target"><button type="button" data-k="hi" aria-pressed="true">High</button><button type="button" data-k="lo" aria-pressed="false">Low</button><button type="button" data-k="rg" aria-pressed="false">Range</button></span></span>
+  <span class="grp"><span class="lab">Forecasts</span>
+    <span class="seg" role="group" aria-label="Horizon"><button type="button" data-h="day" aria-pressed="true">Day</button><button type="button" data-h="hour" aria-pressed="false">Hour</button></span></span>
+  <span class="grp dates"><span class="lab">Dates</span>
+    <input type="date" id="d-from" aria-label="From"><span class="to">to</span><input type="date" id="d-to" aria-label="To">
+    <span class="seg" role="group" aria-label="Date range"><button type="button" data-r="5">5 days</button><button type="button" data-r="20">20 days</button><button type="button" data-r="frozen">Since frozen</button><button type="button" data-r="all">All</button></span></span>
+</div>
+
+<section id="board">
+  <div class="sechead"><p class="eyebrow">Scoreboard</p><h2 id="h-board">—</h2>
+    <p>Out of sample since the models were frozen, with the same scores for January to the cut-off (walk-forward forecasts, refitted as they went) as the reference. A well-calibrated 80% band holds the actual about 8 times in 10, and it lands above the 90% level and below the 10% level about 1 time in 10 each. Median error: the average distance between the actual and the median forecast. Click a model to chart it.</p></div>
+  <div class="figure"><div class="scroll"><table id="t-board"></table></div>
+    <p class="tbl-note" id="n-board"></p></div>
+</section>
+
+<section id="latest">
+  <div class="sechead"><p class="eyebrow">Latest session</p><h2 id="h-latest">—</h2></div>
+  <div class="figure"><div class="scroll"><table id="t-latest"></table></div></div>
+</section>
+
+<section id="direction">
+  <div class="sechead"><p class="eyebrow">Direction</p><h2 id="h-dir">—</h2>
+    <p>Every hour from 10:15 to 15:15, the price is read against the day forecast in force: the 10:15 re-issue (the 09:15 forecast where there is none). d high = (price − H75) / (H75 − H25) and d low = (L75 − price) / (L25 − L75), with L75 the deeper low level. The flag is the calibrated call: a logistic model of d (refitted every quarter on earlier sessions only) gives P(the next hour closes up); <b class="up">▲ up</b> when it is above 50%, otherwise <b class="down">▼ down</b>. Its confidence (0–100) ranks how far P(up) is from 50% against the hours the model was trained on, and the darker the colour, the more confident the call. A filled marker went the flagged way over the next hour, a hollow one went the other way; the 15:15 reading has no full hour left in the session. Click a session to chart it.</p></div>
+  <div class="figure">
+    <div class="acc" id="dir-acc"></div>
+    <div class="scroll"><table id="t-dir-hour"></table></div>
+    <div class="dir-grid" id="c-dir-grid"></div>
+    <div class="fighead"><label class="pickm"><span class="lab">Session</span> <select id="dsel"></select></label>
+      <ul class="legend"><li><span class="sw" style="background:color-mix(in srgb,var(--up) 30%,var(--surface))"></span><span class="sw" style="background:var(--up)"></span>▲ up, low → high confidence</li><li><span class="sw" style="background:color-mix(in srgb,var(--down) 30%,var(--surface))"></span><span class="sw" style="background:var(--down)"></span>▼ down</li><li><span class="sw sw-ring"></span>went the other way</li></ul></div>
+    <div class="chart" id="c-dir-day"></div>
+    <details><summary>Every reading</summary><div class="scroll"><table id="t-dir"></table></div></details>
+  </div>
+</section>
+
+<section id="series">
+  <div class="sechead"><p class="eyebrow">Session by session</p><h2 id="h-series">—</h2>
+    <p id="p-series"></p></div>
+  <div class="figure">
+    <div class="fighead"><label class="pickm"><span class="lab">Model</span> <select id="sel"></select></label>
+      <ul class="legend"><li><span class="sw band8"></span>80% band</li><li><span class="sw band5"></span>50% band</li><li><span class="sw medk"></span>median</li><li><span class="sw" style="background:var(--ok)"></span>actual inside 80%</li><li><span class="sw sw-ring"></span>outside</li></ul></div>
+    <div class="acc" id="acc"></div>
+    <div class="chart" id="c-series"></div>
+    <div class="chart" id="c-run"></div>
+    <div class="fighead"><p class="lab-h" id="h-price">Actual price against the predicted median price</p>
+      <ul class="legend"><li><span class="sw" style="background:var(--ink-2);height:3px"></span>actual</li><li><span class="sw medk"></span>predicted median</li><li><span class="sw" style="background:var(--k);opacity:.22"></span>80% band</li></ul></div>
+    <div class="acc" id="acc-price"></div>
+    <div class="chart" id="c-price"></div>
+    <p class="caption" id="cap-series"></p>
+    <details><summary>Every forecast</summary><div class="scroll"><table id="t-series"></table></div></details>
+  </div>
+</section>
+
+<footer>
+  <p>Forecasts from the NIFTY50 Bliss pipeline, outcomes from Dhan 5-minute bars of the NIFTY50 cash index. Moves are in % of each forecast's anchor (the open, the previous close, or the close at the hour's issue); points are the same move at that anchor. Forecasts, not advice.</p>
+  <p class="stamp" id="gen"></p>
+</footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script src="app.js?v=a5b904788a"></script>
+</body>
+</html>

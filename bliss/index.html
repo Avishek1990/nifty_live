@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIFTY50 Bliss</title>
+<meta name="description" content="Live NIFTY50: market news, the day and hour forecasts with long and short targets and stop losses adjusted for the news every 15 minutes, the 09:15, 10:15 and hourly forecasts as issued, and how the forecast did over the last 30 sessions.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=06ed2de261">
+</head>
+<body>
+<div class="flash" id="flash" aria-live="polite"></div>
+<div class="wrap">
+<header>
+  <p class="eyebrow">NIFTY50 cash index · Dhan 5-minute bars · NIFTY50 Bliss</p>
+  <div class="spot" id="spot"></div>
+  <div class="ohlc" id="ohlc"></div>
+  <p id="livepill"></p>
+</header>
+
+<section id="now">
+  <div class="sechead"><p class="eyebrow">Main forecast · adjusted for the news every 15 minutes</p><h2 id="h-now">—</h2>
+    <p>The day and the current hour, each at its latest news adjustment. <b>Long</b>: target the median high, stop loss at the 90% low. <b>Short</b>: target the median low, stop loss at the 90% high. Points are measured from the last price. Until 10:15 the day is the 09:15 forecast; from 10:15 it is the 10:15 re-issue. The hour forecast is issued every hour from 10:15 to 14:15 and adjusted every 15 minutes in between.</p></div>
+  <div class="cards" id="c-main"></div>
+</section>
+
+<section id="forecast">
+  <div class="sechead"><p class="eyebrow">Forecasts as issued · 09:15 day, 10:15 re-issue, hourly</p><h2 id="h-today">—</h2>
+    <p>Where today's high and low should land, issued once the open is known and fixed for the day, then re-issued at 10:15 with the first hour known, and the hour forecast issued every hour from 10:15. A level marked 90% means the high stays below it (or the low stays above it) on 90 days in 100.</p></div>
+  <div id="c-open"></div>
+  <div class="cards" id="cards3"></div>
+  <div class="cards" id="cards-day"></div>
+</section>
+
+<section id="newsfc">
+  <div class="sechead"><p class="eyebrow">News forecast · made before the open</p><h2>What the news says about today</h2>
+    <p>Before the open, the overnight news (Indian articles on 17 market topics, their volume and tone) and the overnight markets give three forecasts for the session: the opening gap, the move from open to close, and the size of the day. The <b>news part</b> is what the news adds against an ordinary news day; the rest comes from the overnight markets. Then, from 10:15, the live news every 15 minutes.</p></div>
+  <div id="nf-call"></div>
+  <div class="cards" id="nf-cards"></div>
+  <div class="figure">
+    <div class="fighead"><h3>What drives the call · each topic's push on the opening gap</h3></div>
+    <div id="nf-topics"></div>
+  </div>
+  <div class="figure">
+    <div class="fighead"><h3>Live news through the day</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi)"></span>tone since the open</li><li><span class="sw" style="background:var(--lo)"></span>tone, last hour</li><li><span class="sw" style="background:var(--muted)"></span>market-driver share since the open</li></ul></div>
+    <div class="chart" id="c-nflive"></div>
+    <p class="caption">Every 15 minutes from 10:15, Indian articles about market drivers (RBI, inflation, the rupee, crude, the Fed, tariffs and so on) up to 15 minutes before the mark. Each line is a z-score against the same time of day over the last 60 sessions: 0 is a usual day, +2 unusually positive (tone) or unusually heavy coverage (share).</p>
+  </div>
+  <div class="figure">
+    <div class="fighead"><h3>Last 30 sessions · the news forecast against what happened</h3></div>
+    <div class="acc" id="nf-acc"></div>
+    <details><summary>Session by session</summary><div class="scroll"><table id="t-nf"></table></div></details>
+  </div>
+</section>
+
+<section id="charts">
+  <div class="sechead"><p class="eyebrow">Charts</p><h2>Today's price against the forecast</h2></div>
+  <div class="figure">
+    <div class="fighead"><h3>The day so far</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi);opacity:.5"></span>where the high should land</li><li><span class="sw" style="background:var(--lo);opacity:.5"></span>where the low should land</li><li><span class="sw" style="background:var(--muted)"></span>yesterday's close</li></ul></div>
+    <div class="chart" id="c-day"></div>
+    <p class="caption">How to read it: the blue zone is where the day's high is expected (8 days in 10 it ends inside), the amber zone the same for the low. The solid line in each zone is the middle guess. The thin dashed lines are the far limits: the day goes past its 95% line about 1 day in 20, past the 99% line about 1 day in 100. If price is pushing the edge of a zone early, the day is running bigger than the model expected.</p>
+  </div>
+  <div class="figure">
+    <div class="fighead"><h3>The hour forecasts, every hour from 10:15</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi);opacity:.5"></span>next hour's high</li><li><span class="sw" style="background:var(--lo);opacity:.5"></span>next hour's low</li><li><span class="sw" style="background:var(--ok)"></span>landed inside</li></ul></div>
+    <div class="chart" id="c-hour"></div>
+    <p class="caption">At 10:15, 11:15, 12:15, 13:15 and 14:15 a forecast is issued for how high and how low the coming hour goes. Each box covers its hour: blue for the hour's high, amber for its low (8 times in 10 inside). Once the hour is over a dot shows what happened: green when it landed inside the box.</p>
+    <details><summary>Every hour forecast</summary><div class="scroll"><table id="t-hour"></table></div></details>
+  </div>
+</section>
+
+<section id="news">
+  <div class="sechead"><p class="eyebrow">News calibration</p><h2>The forecasts adjusted for the news</h2></div>
+  <div class="figure">
+    <div id="nw-body"></div>
+    <p class="caption">A thin layer on top of the forecasts; the forecasts themselves are unchanged. <b>As issued</b> is the forecast itself. <b>Daily news</b> moves each level by an amount learned from earlier sessions, using the daily news signal (mood, loudness, news impact on the gap and on the size of the day) of today and the two sessions before, all published by 05:30. <b>Daily + live</b> adds the live news from GDELT's 15-minute article files, up to 15 minutes before the mark: the share of Indian articles about market drivers (RBI, inflation, the rupee, crude, the Fed, tariffs and so on) and their tone, since the open and over the last hour. Every 15 minutes from 10:15 the day's 10:15 re-issue and the current hour's forecast are re-adjusted, never inside the high or low already made; the main forecast and its targets and stop losses follow the latest adjustment.</p>
+    <details open><summary>Targets and stop losses at every mark</summary><div class="scroll"><table id="t-news"></table></div></details>
+    <details><summary>How the version 1 calibration scored out of sample</summary><div class="scroll"><table id="t-news-sc"></table></div>
+      <p class="tbl-note">Walk-forward, refitted every quarter from 2021. Error: average pinball loss in % (levels) or log loss (probabilities); lower is better. Recalibrated = the same correction without the news inputs. “News − recal.” is the difference with its 95% bootstrap range over sessions; below 0 means the news version had the lower loss. These scores are for the daily-news version on the 09:15 day forecast, today-vs-yesterday and the 15-minute hour forecast of the backtest; the hourly re-adjustments and the 10:15 re-issue's adjustment have not been scored yet.</p></details>
+  </div>
+</section>
+
+<section id="history">
+  <div class="sechead"><p class="eyebrow">Last 30 sessions</p><h2>Forecast against what happened</h2>
+    <div class="seg" role="group" aria-label="Forecast shown"><button type="button" id="h-open" aria-pressed="true">09:15 forecast</button><button type="button" id="h-e1015" aria-pressed="false">10:15 re-issue</button></div>
+    <p><span id="h-what">The 09:15 day forecast</span> for each of the last 30 sessions, with the actual high and low. A band holds when the actual landed inside it: a well-calibrated 50% band holds about half the time, an 80% band 8 times in 10, a 90% band 9 times in 10.</p></div>
+  <div class="acc" id="acc"></div>
+  <div class="figure">
+    <div class="fighead"><h3>Predicted bands and the actual high and low</h3>
+      <ul class="legend"><li><span class="sw" style="background:var(--hi);opacity:.5"></span>high: 50% / 80% / 90% band</li><li><span class="sw" style="background:var(--lo);opacity:.5"></span>low: 50% / 80% / 90% band</li><li><span class="sw" style="background:var(--ok)"></span>actual inside 80%</li><li><span class="sw sw-ring"></span>actual outside 80%</li></ul></div>
+    <div class="chart" id="c-hist"></div>
+    <p class="caption">Each column is one session. The darkest part of a bar is the 50% band, the middle shade the 80% band, the thin line the 90% band. 50% = 25th to 75th percentile, 80% = 10th to 90th, 90% = 5th to 95th. <span id="h-note"></span></p>
+    <details open><summary>Session by session</summary><div class="scroll"><table id="t-hist"></table></div></details>
+  </div>
+</section>
+
+<footer>
+  <p>Built from Dhan market data and GDELT news by the NIFTY50 Bliss pipeline. Targets and stop losses are read off the forecast levels. Forecasts, not advice. <a href="monitor/">Model monitor</a>: every forecast against what happened since the models were frozen.</p>
+  <p class="stamp" id="gen"></p>
+</footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script src="app.js?v=06ed2de261"></script>
+</body>
+</html>

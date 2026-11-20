@@ -1,0 +1,35 @@
+/* model monitor: on top of ../style.css (tokens, tables, segments, tooltip) */
+header a{color:inherit}
+#t-board tbody tr{cursor:pointer}
+#t-board tbody tr:hover td{background:var(--paper)}
+#t-board tbody tr[aria-selected="true"] td{background:color-mix(in srgb,var(--hi) 10%,transparent)}
+#t-board tbody tr:focus-visible{outline:2px solid var(--hi);outline-offset:-2px}
+#t-board tr.grp td{cursor:default;background:transparent;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);padding-top:16px}
+td.ref,th.ref{color:var(--muted)}
+td.off{color:var(--down);font-weight:600}
+td.na{color:var(--soft)}
+th.c,td.c{text-align:center}
+.pickm{display:flex;align-items:center;gap:8px}
+.pickm .lab{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.pickm select{font:500 .85rem var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:5px;padding:6px 8px;max-width:100%}
+.sw.band8{background:var(--k);opacity:.22}
+.sw.band5{background:var(--k);opacity:.45}
+.sw.medk{background:var(--k);height:3px}
+:root{--k:var(--hi)}
+body[data-k="lo"]{--k:var(--lo)}
+body[data-k="rg"]{--k:var(--news)}
+td.y{color:var(--ok)} td.n{color:var(--down)}
+@media(max-width:640px){body{padding-inline:16px}.controls{gap:8px 14px}}
+
+/* date range and the direction section */
+.dates input[type=date]{font:500 .8rem var(--mono);color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:5px;padding:6px 8px;color-scheme:light dark}
+.dates .to{font-family:var(--mono);font-size:.72rem;color:var(--soft)}
+.dir-grid{max-height:560px;overflow-y:auto;margin:10px 0}
+.dir-grid svg{display:block}
+.dir-grid .rowsel rect.bg{fill:color-mix(in srgb,var(--hi) 12%,transparent)}
+.dir-grid g.day{cursor:pointer}
+td.up{color:var(--up)} td.down{color:var(--down)}
+.lab-h{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:18px 0 0}
+@media(max-width:640px){.dates{flex-wrap:wrap}.dates input[type=date]{max-width:9.5rem}}
+.pickm{max-width:100%;min-width:0}.pickm select{min-width:0;flex:1 1 auto;width:100%;text-overflow:ellipsis}
+.fighead{flex-wrap:wrap;min-width:0}
